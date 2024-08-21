@@ -1,5 +1,6 @@
 package br.com.ruanmolina.springlogin.security;
 
+import br.com.ruanmolina.springlogin.filter.AuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,13 +24,21 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final AuthFilter authFilter;
+    public SecurityConfig(AuthFilter authFilter){
+        this.authFilter = authFilter;
+
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception  {
         return http//.cors(cors -> cors.disable())
                 .csrf( csrf->  csrf.disable()) // desabilita o csrf pois eu que irei tratar.
                 .sessionManagement( sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST,"/user").permitAll()
-                        .anyRequest().authenticated()).build();
+                        .requestMatchers(HttpMethod.POST,"/user/login").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
