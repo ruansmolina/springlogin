@@ -45,12 +45,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody DTOLogin login) {
-        System.out.println("Entrou no login");
-        System.out.println("TOKEN AUTH");
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(login.email(), login.password());
-        System.out.println("AUTH");
         Authentication auth = authManager.authenticate(authToken);
-        System.out.println("TOKEN JWT");
         String tokenJWT = tokenService.generateToken((User) auth.getPrincipal());
         return ResponseEntity.ok(new DTOTokenJWT(tokenJWT));
 

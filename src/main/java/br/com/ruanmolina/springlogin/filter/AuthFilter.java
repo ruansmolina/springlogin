@@ -28,10 +28,8 @@ public class AuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println("Entrou no Filtro ");
         String token = recoverToken(request);
         if(token != null){
-            System.out.println("Entrou no if do token");
             String subject = tokenService.recoverSubject(token);
             UserDetails user = userRep.findByEmail(subject).orElseThrow(()-> new RuntimeException("Usuario não encontrado"));
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
